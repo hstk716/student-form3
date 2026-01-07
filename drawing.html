@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Drawing Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* Global */
+* { box-sizing: border-box; margin:0; padding:0; }
+html, body { height: 100%; font-family: 'Inter', sans-serif; }
+
+/* Futuristic black-and-white background */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+}
+
+/* Sparse white dots with subtle glitch animation */
+body::before {
+  content: '';
+  position: absolute;
+  top:0; left:0; right:0; bottom:0;
+  background-image: radial-gradient(circle, #fff 2px, transparent 2px);
+  background-size: 100px 100px;
+  z-index: 0;
+  animation: glitchDots 6s infinite alternate ease-in-out;
+  opacity: 0.15;
+}
+
+@keyframes glitchDots {
+  0%   { transform: translate(0px, 0px); }
+  25%  { transform: translate(1px, -1px); }
+  50%  { transform: translate(-1px, 2px); }
+  75%  { transform: translate(1px, 1px); }
+  100% { transform: translate(0px, -1px); }
+}
+
+/* Container */
+.container {
+  position: relative;
+  z-index: 1;
+  background: #111;
+  padding: 25px 30px;
+  max-width: 450px;
+  width: 90%;
+  border-radius: 16px;
+  border: 1px solid #fff;
+  box-shadow: 0 0 40px rgba(255,255,255,0.05);
+}
+
+/* Headings */
+h2 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tool-btn:hover {
+  background: #333;
+}
+
+.tool-btn img {
+  width: 16px;
+  height: 16px;
+}
+
+/* Sliders */
+input[type=range] {
+  -webkit-appearance: none;
+  width: 80px;
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* Canvas */
+canvas {
+  display: block;
+  background: #000;
+  border: 1px solid #fff;
+  width: 100%;
+  height: 300px;
+  cursor: crosshair;
+  margin-top: 10px;
+}
+
+/* Save button */
+button#saveBtn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button#saveBtn:hover {
+  background: #000;
+  color: #fff;
+  border: 1px solid #fff;
+}
+
+/* Shortcut display */
+.shortcuts {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 5px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>Draw your design</h2>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="tool-btn" id="doodleBtn">
+      <img src="https://img.icons8.com/ios-filled/50/ffffff/pencil-tip.png" alt="Doodle">
+      Doodle (D)
+    </div>
+    <div class="tool-btn" id="eraserBtn">
+      <img src="https://img.icons8.com/ios-filled/50/ffffff/eraser.png" alt="Eraser">
+      Eraser (E)
+    </div>
+    <label>Brush:
+      <input type="range" id="brushSize" min="1" max="20" value="2">
+    </label>
+    <label>Eraser Size:
+      <input type="range" id="eraserSize" min="5" max="50" value="15">
+    </label>
+    <input type="color" id="brushColor" value="#ffffff">
+  </div>
+
+  <!-- Canvas -->
+  <canvas id="drawingCanvas"></canvas>
+  <button id="saveBtn">Save & Submit</button>
+  <div class="shortcuts">Keyboard shortcuts: D = Doodle, E = Eraser</div>
+</div>
+
+<script>
+const canvas = document.getElementById('drawingCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = canvas.offsetWidth;
+canvas.height = 300;
+
+let drawing = false;
+let currentTool = 'doodle';
+let brushColor = document.getElementById('brushColor').value;
+let brushSize = document.getElementById('brushSize').value;
+let eraserSize = document.getElementById('eraserSize').value;
+
+// Update brush/eraser size dynamically
+document.getElementById('brushSize').addEventListener('input', e => brushSize = e.target.value);
+document.getElementById('eraserSize').addEventListener('input', e => eraserSize = e.target.value);
+document.getElementById('brushColor').addEventListener('input', e => brushColor = e.target.value);
+
+// Tool buttons
+document.getElementById('doodleBtn').addEventListener('click', () => currentTool = 'doodle');
+document.getElementById('eraserBtn').addEventListener('click', () => currentTool = 'eraser');
+
+// Mouse events
+canvas.addEventListener('mousedown', e => {
+  drawing = true;
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX, e.offsetY);
+});
+
+canvas.addEventListener('mousemove', e => {
+  if(!drawing) return;
+
+  if(currentTool === 'doodle') {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = brushColor;
+    ctx.lineWidth = brushSize;
+  } else if(currentTool === 'eraser') {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineWidth = eraserSize;
+  }
+
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX, e.offsetY);
+});
+
+canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
+canvas.addEventListener('mouseout', () => { drawing = false; ctx.beginPath(); });
+
+// Keyboard shortcuts
+window.addEventListener('keydown', e => {
+  if(e.key.toLowerCase() === 'd') currentTool = 'doodle';
+  if(e.key.toLowerCase() === 'e') currentTool = 'eraser';
+});
+
+// Save canvas
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const dataUrl = canvas.toDataURL('image/png');
+  window.open(dataUrl, "_blank");
+});
+</script>
+</body>
+</html>
+
+
+

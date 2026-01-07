@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Story Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* Global */
+* { box-sizing: border-box; margin:0; padding:0; }
+html, body { height: 100%; font-family: 'Inter', sans-serif; }
+
+/* Futuristic black-and-white background */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+}
+
+/* Sparse white dots with subtle glitch animation */
+body::before {
+  content: '';
+  position: absolute;
+  top:0; left:0; right:0; bottom:0;
+  background-image: radial-gradient(circle, #fff 2px, transparent 2px);
+  background-size: 100px 100px;
+  z-index: 0;
+  animation: glitchDots 6s infinite alternate ease-in-out;
+  opacity: 0.15;
+}
+
+@keyframes glitchDots {
+  0%   { transform: translate(0px, 0px); }
+  25%  { transform: translate(1px, -1px); }
+  50%  { transform: translate(-1px, 2px); }
+  75%  { transform: translate(1px, 1px); }
+  100% { transform: translate(0px, -1px); }
+}
+
+/* Container */
+.container {
+  position: relative;
+  z-index: 1;
+  background: #111;
+  padding: 25px 30px;
+  max-width: 450px;
+  width: 90%;
+  border-radius: 16px;
+  border: 1px solid #fff;
+  box-shadow: 0 0 40px rgba(255,255,255,0.05);
+}
+
+/* Heading */
+h2 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+/* Story textarea */
+textarea {
+  width: 100%;
+  height: 250px;
+  background: #000;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  resize: none;
+}
+
+/* Button */
+button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background: #000;
+  color: #fff;
+  border: 1px solid #fff;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>Write your story</h2>
+  <textarea placeholder="Type your story here..."></textarea>
+  <button id="submitBtn">Submit</button>
+</div>
+
+<script>
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const story = document.querySelector('textarea').value.trim();
+  if(story === '') return alert("Please write something before submitting!");
+  const newWindow = window.open();
+  newWindow.document.write('<pre style="font-family:Space Mono;color:#fff;background:#000;padding:20px;">' + story + '</pre>');
+});
+</script>
+</body>
+</html>
+

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Entry Form</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* Global */
+* { box-sizing: border-box; margin:0; padding:0; }
+html, body { height: 100%; font-family: 'Inter', sans-serif; }
+
+/* Futuristic Black & White Background */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: #000; /* pure black background */
+  color: #fff;
+}
+
+/* Sparse white dots with subtle glitch animation */
+body::before {
+  content: '';
+  position: absolute;
+  top:0; left:0; right:0; bottom:0;
+  background-image: radial-gradient(circle, #fff 2px, transparent 2px);
+  background-size: 100px 100px;
+  z-index: 0;
+  animation: glitchDots 6s infinite alternate ease-in-out;
+  opacity: 0.15; /* subtle */
+}
+
+@keyframes glitchDots {
+  0%   { transform: translate(0px, 0px); }
+  25%  { transform: translate(1px, -1px); }
+  50%  { transform: translate(-1px, 2px); }
+  75%  { transform: translate(1px, 1px); }
+  100% { transform: translate(0px, -1px); }
+}
+
+/* Page container */
+.page {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Form Container */
+.container {
+  background: #111; /* dark container for contrast */
+  color: #fff;
+  padding: 30px 35px;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 16px;
+  border: 1px solid #fff;
+  box-shadow: 0 0 40px rgba(255,255,255,0.05);
+}
+
+/* Headings */
+h2 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  color: #fff;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+/* Labels & Inputs */
+label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #bbb;
+  margin-top: 14px;
+  display: block;
+}
+
+input, textarea {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #555;
+  padding: 8px 0;
+  font-size: 14px;
+  font-family: 'Space Mono', monospace;
+  background: transparent;
+  color: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input::placeholder { color: #777; }
+
+input:focus {
+  outline: none;
+  border-bottom-color: #fff;
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.2);
+}
+
+/* Button */
+button {
+  margin-top: 30px;
+  width: 100%;
+  padding: 14px;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Space Mono', monospace;
+  cursor: not-allowed;
+  opacity: 0.5;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+button.enabled {
+  cursor: pointer;
+  opacity: 1;
+}
+
+button.enabled:hover {
+  transform: scale(1.02);
+  background: #000;
+  color: #fff;
+  border: 1px solid #fff;
+}
+
+/* Warning Message */
+.warning {
+  color: red;
+  font-size: 11px;
+  margin-top: 6px;
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .container { padding: 20px; }
+  h2 { font-size: 16px; }
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+  <div class="container">
+    <!-- Parent Details -->
+    <h2>Parent Details</h2>
+
+    <label>Parent Name</label>
+    <input type="text" id="parentName" placeholder="Enter parent name" required>
+
+    <label>Email ID</label>
+    <input type="email" id="email" placeholder="Enter email" required>
+
+    <label>Contact Number</label>
+    <input type="tel" id="contact" placeholder="10-digit number" required>
+
+    <!-- Student Details -->
+    <h2>Student Details</h2>
+
+    <label>Student Name</label>
+    <input type="text" id="studentName" placeholder="Enter student name" required>
+
+    <label>Grade</label>
+    <input type="text" id="grade" placeholder="Enter grade" required>
+
+    <label>Section</label>
+    <input type="text" id="section" placeholder="Enter section" required>
+
+    <label>Age</label>
+    <input type="number" id="age" placeholder="Enter age" required>
+
+    <button id="confirmBtn">Confirm</button>
+    <div class="warning" id="warningMsg">Please fill all details correctly before confirming.</div>
+  </div>
+</div>
+
+<script>
+const confirmBtn = document.getElementById("confirmBtn");
+const warningMsg = document.getElementById("warningMsg");
+const fields = ['parentName','email','contact','studentName','grade','section','age'];
+
+fields.forEach(id => {
+  document.getElementById(id).addEventListener('input', checkForm);
+});
+
+function checkForm() {
+  let allFilled = true;
+  fields.forEach(id => {
+    const val = document.getElementById(id).value.trim();
+    if (!val) allFilled = false;
+  });
+
+  const contact = document.getElementById('contact').value.trim();
+  if (contact && !/^\d{10}$/.test(contact)) allFilled = false;
+
+  if(allFilled){
+    confirmBtn.classList.add("enabled");
+    confirmBtn.disabled = false;
+  } else {
+    confirmBtn.classList.remove("enabled");
+    confirmBtn.disabled = true;
+  }
+}
+
+confirmBtn.addEventListener('click', function(){
+  let allValid = true;
+  fields.forEach(id=>{
+    const val = document.getElementById(id).value.trim();
+    if(!val) allValid = false;
+  });
+
+  const contact = document.getElementById('contact').value.trim();
+  if(!/^\d{10}$/.test(contact)) allValid = false;
+
+  if(!allValid){
+    warningMsg.style.display = 'block';
+    return;
+  } else {
+    warningMsg.style.display = 'none';
+  }
+
+  const age = parseInt(document.getElementById("age").value);
+  if(age < 10){
+    window.open("drawing.html","_blank");
+  } else {
+    window.open("story.html","_blank");
+  }
+});
+</script>
+<form id="studentForm">
+
+<script>
+const form = document.getElementById('studentForm');
+
+// Replace this URL with your deployed Google Apps Script web app URL
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxgtuIm_OWY7iRg48u3hlc94tFdmXA7W-UN5gzDokdXCCUPMx7gSkEhFiqtfRQpLwj/exec";
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // Gather data from form
+  const data = {
+    parentName: document.getElementById('parentName').value,
+    parentEmail: document.getElementById('parentEmail').value,
+    parentContact: document.getElementById('parentContact').value,
+    studentName: document.getElementById('studentName').value,
+    grade: document.getElementById('studentGrade').value,
+    section: document.getElementById('studentSection').value,
+    age: parseInt(document.getElementById('studentAge').value)
+  };
+
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    const result = await response.json();
+    console.log(result);
+
+    if(result.result === "success") {
+      alert("Data saved successfully!");
+
+      // Redirect based on age
+      if(data.age < 10) {
+        window.location.href = "drawing.html";
+      } else {
+        window.location.href = "story.html";
+      }
+
+    } else {
+      alert("Error saving data: " + result.message);
+    }
+
+  } catch(err) {
+    console.error(err);
+    alert("Error connecting to Google Sheets.");
+  }
+});
+</script>
+
+</script>
+</body>
+</html>
