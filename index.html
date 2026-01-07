@@ -247,10 +247,10 @@ const confirmBtn = document.getElementById("confirmBtn");
 const warningMsg = document.getElementById("warningMsg");
 const fields = ['parentName','email','contact','studentName','grade','section','age'];
 
-// Your Google Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxccww9LIZ9yuDHeQbT-uK5fF874I0oPo4txBJ4W1bUzsTp5Ybdx76xN0qR7dmTA6s/exec"; // <-- Replace with your deployed Web App URL
+// Replace with your Apps Script Web App URL
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKAEm7stHGe72BScqPjmLh--cGBotTEu7gvCbCTBDXcCaEtk2wqVFFiI1teceAdypx/exec";
 
-// Enable/disable button
+// Enable/disable confirm button based on input
 fields.forEach(id => {
   document.getElementById(id).addEventListener('input', checkForm);
 });
@@ -274,12 +274,10 @@ function checkForm() {
   }
 }
 
-// Handle click
 confirmBtn.addEventListener('click', async function(){
-
   let allValid = true;
   const formData = {};
-  
+
   fields.forEach(id=>{
     const val = document.getElementById(id).value.trim();
     if(!val) allValid = false;
@@ -317,21 +315,19 @@ confirmBtn.addEventListener('click', async function(){
       alert("Error saving data: " + (result.message || "Unknown error"));
       return;
     }
-
   } catch(err){
     console.error(err);
     alert("Could not connect to Google Sheets.");
     return;
   }
 
-  // Redirect based on age
+  // Open next page based on age
   const age = parseInt(formData.age);
   if(age < 10){
     window.open("drawing.html","_blank");
   } else {
     window.open("story.html","_blank");
   }
-
 });
 </script>
 
